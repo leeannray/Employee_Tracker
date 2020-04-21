@@ -88,7 +88,7 @@ class Database {
       [managerId, employeeId]
     );
   }
-    
+
   findAllPossibleManagers(employeeId) {
     return this.connection.query(
       "SELECT id, first_name, last_name FROM employee WHERE id != ?",
