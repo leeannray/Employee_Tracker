@@ -15,7 +15,7 @@ VALUES ("Senior", 65000, 1),
 ("Intern", 50000, 1),
 ("Manager", 125000, 1),
 ("Manager", 125000, 2),
-("Manager", 125000, 3),
+("Manager", 125000, 3);
 
 
 
@@ -25,4 +25,4 @@ VALUES ("Lee Ann", "Norman", 1, NULL),
 ("Brian", "Genius", 4, 3),
 ("Jorge", "Awesome", 5, NULL),
 ("Miguel", "Smart", 6, 2),
-("Robyn", "Nice", 7, 2)
+("Robyn", "Nice", 7, 2);
