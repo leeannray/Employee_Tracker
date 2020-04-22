@@ -1,6 +1,7 @@
 const { prompt } = require('inquirer');
 const appLogo = require('asciiart-logo');
 const data = require('./db');
+const db = require('./db');
 require('console.table');
 
 init();
@@ -88,7 +89,7 @@ async function displayPrompts() {
 
     switch (choice) {
         case "VIEW_EMPLOYEES":
-            return viewEmployees();
+            return allEmployees();
             break;
         case "VIEW_EMPLOYEES_BY_DEPT":
             return viewEmployeesByDept();
@@ -134,12 +135,69 @@ async function displayPrompts() {
 
     }
 }
-async function addRole() {
-    const allDepartments = await db.allDepartments();
-    const deptChoices = allDepartments.map(({ id, name }) => ({
+
+async function allEmployees() {
+  const employees = await db.findAllEmployees();
+
+  console.log("\n");
+  console.table(employees);
+
+  displayPrompts();
+}
+
+async function viewEmployeesByDept() {
+    const empDepts = await db.findAllDepartments();
+
+    const departmentChoices = department.map(({ id, name }) => ({
         name: name,
         value: id
     }));
+    
+    const { departmentId } = await prompt([
+        {
+            type: "list",
+            name: "departmentId",
+            message: "Choose a department to view its employees: ",
+            choices: departmentChoices
+        }
+    ]);
+
+    const employeeDept = await db.findAllEmployeesByDepartment(departmentId);
+
+    console.log("\n");
+    console.table(employees);
+
+    displayPrompts();
+}
+
+async function viewEmployeesByMan() {
+    const employeeMan = await db.findAllEmployeesByManager();
+    const manChoices = employeeMan.map(({ id, first_name, last_name }) => ({
+        name: `${first_name} ${last_name}`,
+        value: id
+    }));
+
+    const { managerId } = await prompt([
+        {
+            type: "list",
+            name: "managerId",
+            message: "Which employee do you want to see records for?",
+            choices: manChoices
+        }
+    ]);
+
+    const employees = await db.findAllEmployeesByManager(managerId);
+
+    console.log("\n");
+
+    if (employees.length === 0) {
+        console.log("The selected employee has no direct reports");
+    } else {
+        console.table(employees);
+    }
+    displayPrompts();
+}
+
     const role = await inquirer.prompt([
         {
             name: 'title',
