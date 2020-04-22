@@ -36,7 +36,7 @@ async function mainMenu() {
                 },
                 {
                     name: "Delete Employee",
-                    value: "DELETE_EMPLOYEE"
+                    value: "DEL_EMPLOYEE"
                 },
                 {
                     name: "Update Employee Role",
@@ -48,7 +48,7 @@ async function mainMenu() {
                 },
                 {
                     name: "View All Roles",
-                    value: "VIEW_ALLROLES"
+                    value: "VIEW_ALL_ROLES"
                 },
                 {
                     name: "Add Role",
@@ -56,7 +56,7 @@ async function mainMenu() {
                 },
                 {
                     name: "Delete Role",
-                    value: "DELETE_ROLE"
+                    value: "DEL_ROLE"
                 },
                 {
                     name: "View All Departments",
@@ -68,7 +68,7 @@ async function mainMenu() {
                 },
                 {
                     name: "Delete Department",
-                    value: "DELETE_DEPT"
+                    value: "DEL_DEPT"
                 },
                 {
                     name: "Exit",
@@ -87,6 +87,38 @@ async function mainMenu() {
       case "VIEW_EMPLOYEES_BY_MAN":
         return viewEmployeesByMan();
         break;
+      case "ADD_EMPLOYEE":
+        return addEmployee();
+        break;
+      case "DEL_EMPLOYEE":
+        return delEmployee();
+        break;
+      case "UPDATE_EMPLOYEE_ROLE":
+        return updateEmployeeRole();
+        break;
+      case "UPDATE_EMPLOYEE_MAN":
+        return updateEmployeeMan();
+        break;
+      case "VIEW_ALL_ROLES":
+        return viewAllRoles();
+        break;
+      case "ADD_ROLE":
+        return addRole();
+        break;
+      case "DEL_ROLE":
+        return delRole();
+        break;
+      case "VIEW_DEPTS":
+        return viewDepts();
+        break;
+      case "ADD_DEPT":
+        return addDept();
+        break;
+      case "DEL_DEPT":
+        return delDept();
+        break;
+      case "EXIT" || default:
+        
     }
 
 
