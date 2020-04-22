@@ -25,8 +25,12 @@ CREATE TABLE role
 CREATE TABLE employee
 (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    first_name VARCHAR(30) NOT NULL,
-    last_name VARCHAR(30) NOT NULL,
+    first_name VARCHAR(30) UNSIGNED NOT NULL,
+    last_name VARCHAR(30) UNSIGNED NOT NULL,
+    INDEX first_name_ind(first_name_id),
+    CONSTRAINT fk_employee1 FOREIGN KEY(first_id) REFERENCES employee(id) ON DELETE CASCADE,
+    INDEX last_name_ind(last_name_id),
+    CONSTRAINT fk_employee2 FOREIGN KEY(last_id) REFERENCES employee(id) ON DELETE CASCADE,
     role_id INT UNSIGNED NOT NULL,
     INDEX role_ind(role_id),
     CONSTRAINT fk_role FOREIGN KEY(role_id) REFERENCES role(id) ON DELETE CASCADE,

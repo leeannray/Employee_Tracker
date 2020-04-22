@@ -77,7 +77,14 @@ class Database {
   updateEmployeeRole(employeeId, roleId) {
     return this.connection.query(
       "UPDATE employee SET role_id = ? WHERE id = ?",
-      [roleId, employeeId]
+      [employeeId, roleId]
+    );
+  }
+
+  updateEmployeeName(employeeId) {
+    return this.connection.query(
+      "UPDATE employee SET first_id = ? && last_id = ? WHERE id = ?",
+      employeeId
     );
   }
 
@@ -86,6 +93,13 @@ class Database {
     return this.connection.query(
       "UPDATE employee SET manager_id = ? WHERE id = ?",
       [managerId, employeeId]
+    );
+  }
+
+  updateEmployeeDepartment(employeeId, departmentId) {
+    return this.connection.query(
+      "UPDATE employee SET department_id = ? WHERE id = ?",
+      [departmentId, employeeId]
     );
   }
 
