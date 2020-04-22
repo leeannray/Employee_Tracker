@@ -16,7 +16,7 @@ async function mainMenu() {
         {
             type: "list",
             name: "choice",
-            message: "What would you like to do?",
+            message: "Welcome to your Employee Database. What would you like to do?",
             choices: [
                 {
                     name: "View All Employees",
@@ -24,19 +24,19 @@ async function mainMenu() {
                 },
                 {
                     name: "View All Employees By Department",
-                    value: "VIEW_EMPLOYEES_BY_DEPARTMENT"
+                    value: "VIEW_EMPLOYEES_BY_DEPT"
                 },
                 {
                     name: "View All Employees By Manager",
-                    value: "VIEW_EMPLOYEES_BY_MANAGER"
+                    value: "VIEW_EMPLOYEES_BY_MAN"
                 },
                 {
                     name: "Add Employee",
                     value: "ADD_EMPLOYEE"
                 },
                 {
-                    name: "Remove Employee",
-                    value: "REMOVE_EMPLOYEE"
+                    name: "Delete Employee",
+                    value: "DELETE_EMPLOYEE"
                 },
                 {
                     name: "Update Employee Role",
@@ -44,35 +44,35 @@ async function mainMenu() {
                 },
                 {
                     name: "Update Employee Manager",
-                    value: "UPDATE_EMPLOYEE_MANAGER"
+                    value: "UPDATE_EMPLOYEE_MAN"
                 },
                 {
                     name: "View All Roles",
-                    value: "VIEW_ROLES"
+                    value: "VIEW_ALLROLES"
                 },
                 {
                     name: "Add Role",
                     value: "ADD_ROLE"
                 },
                 {
-                    name: "Remove Role",
-                    value: "REMOVE_ROLE"
+                    name: "Delete Role",
+                    value: "DELETE_ROLE"
                 },
                 {
                     name: "View All Departments",
-                    value: "VIEW_DEPARTMENTS"
+                    value: "VIEW_DEPTS"
                 },
                 {
                     name: "Add Department",
-                    value: "ADD_DEPARTMENT"
+                    value: "ADD_DEPT"
                 },
                 {
-                    name: "Remove Department",
-                    value: "REMOVE_DEPARTMENT"
+                    name: "Delete Department",
+                    value: "DELETE_DEPT"
                 },
                 {
-                    name: "Quit",
-                    value: "QUIT"
+                    name: "Exit",
+                    value: "EXIT"
                 }
             ]
         }
@@ -81,10 +81,10 @@ async function mainMenu() {
       case "VIEW_EMPLOYEES":
         return viewEmployees();
         break;
-      case "VIEW_EMPLOYEES_BY_DEPARTMENT":
+      case "VIEW_EMPLOYEES_BY_DEPT":
         return viewEmployeesByDept();
         break;
-      case "VIEW_EMPLOYEES_BY_MANAGER":
+      case "VIEW_EMPLOYEES_BY_MAN":
         return viewEmployeesByMan();
         break;
     }
