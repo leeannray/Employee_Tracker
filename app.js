@@ -306,14 +306,9 @@ async function updateEmployeeRole() {
         value: id,
     }));
 
-    const { employeeId } = await prompt([
-        {
-        type: "list",
-        name: "employeeId",
-        message: "Select an employee to update his or her role:",
-        choices: employeeChoices
-        }
-    ]);
+    const { employeeId } = await prompt(
+      Questions.getTableChoice("employeeId", "Select an employee", employeeChoices)
+    );
 
     const roles = await db.findAllRoles();
 
@@ -322,14 +317,7 @@ async function updateEmployeeRole() {
         value: id,
     }));
 
-    const { roleId } = await prompt([
-        {
-        type: "list",
-        name: "roleId",
-        message: "Which role do you want to assign to the selected employee?",
-        choices: roleChoices,
-        },
-    ]);
+    const { roleId } = await prompt(Questions.getTableChoice("roleId", "Select a role", roleChoices));
 
     await db.updateEmployeeRole(employeeId, roleId);
 
@@ -337,6 +325,40 @@ async function updateEmployeeRole() {
 
     displayPrompts();
 };
+
+async function addDept() {
+
+  const department = await prompt([
+    {
+      name: "name",
+      message: "What is the name of the department?",
+    },
+  ]);
+
+  await db.createDepartment(department);
+
+  console.log(`Added ${department.name} to the database`);
+
+  displayPrompts();
+};
+
+async function delDept() {
+  const departments = await db.deleteDepartment();
+
+  const departmentChoices = departments.map(({ id, name }) => ({
+    name: name,
+    value: id,
+  }));
+
+    const { departmentId } = await prompt(Questions.getTableChoice("departmentId", "Delete a department", departmentChoices)
+    );
+
+  await db.removeDepartment(departmentId);
+
+  console.log(`Removed department from the database`);
+
+  displayPrompts();
+}
 
 async function updateInfo() {
     // let info = {
