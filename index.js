@@ -5,6 +5,7 @@ const database = require('./db');
 var mysql = require("mysql");
 const Questions = require('./db/questions'); //used as template for prompt choices/answers
 require('console.table'); //able to see tables in console
+const connection = require('./db/connection');
 
 //initialize prompts/main menu
 start();
@@ -165,8 +166,7 @@ async function displayPrompts() {
         break;
       case "exitDB":
         return exit();
-      default:
-        connection.end();
+
       //will end connection by default
     }
 }
@@ -312,27 +312,31 @@ async function updateEmployeeDept() {
   }));
 
   const { employeeId } = await prompt(
-    Questions.getTableChoice("list", "employeeId", "Select an employee", employeeChoices)
+    Questions.getTableChoice(
+      "list",
+      "employeeId",
+      "Select an employee",
+      employeeChoices
+    )
   );
 
-  const depts = await db.findAllDepts();
+  const department = await db.findAllDepts();
 
-  const deptChoices = depts.map(({ id, name }) => ({
+  const deptChoices = department.map(({ id, name }) => ({
     name: name,
     value: id
   }));
 
+
   const { departmentId } = await prompt(
-    Questions.getTableChoice("list",
-      "departmentId",
-      "Select a department",
-      deptChoices
-    )
+    Questions.getTableChoice("list", "departmentId", "Select a department", deptChoices)
   );
 
-  await db.updateEmployeeDept(employeeId, departmentId);
 
-  console.log("Updated employee's department");
+ await db.updateEmployeeDept(employeeId, departmentId);
+
+
+    console.log("Updated employee's department");
 
   displayPrompts();
 }
@@ -499,18 +503,7 @@ async function viewDepts() {
 //view all managers
 async function viewAllManagers() {
   const managers = await db.findAllManagers();
-const manChoices = employees.map(({ id, first_name, last_name }) => ({
-  name: `${first_name} ${last_name}`,
-  value: id,
-}));
 
-manChoices.unshift({ name: "None", value: null });
-
-const { managerId } = await prompt(
-  Questions.getTableChoice("list", "managerId", "Select a manager", manChoices)
-);
-
-  employee.manager_id = managerId;
 
   console.table(managers);
 
@@ -569,20 +562,21 @@ async function totalBudget() {
       deptChoices
     )
   );
-  
+
   const total = await db.totalBudget(departmentId);
 
 
   console.log("\n");
 
   console.table(total);
-}
+  displayPrompts();
+};
 //function for exiting prompts/terminal database
 function exit() {
 
     console.log("Until later!");
     process.exit();
-}
+};
 
 //tried to combine any info to be updated into one function (role, manager, department, possibly name etc. but still need to work on this)
 async function updateInfo() {
@@ -618,6 +612,10 @@ async function updateInfo() {
     //     }])
 
 
+};
+
+function exit() {
+  connection.end();
 }
 
 //   const managerChoices = managers.map(({ id, first_name, last_name }) => ({
