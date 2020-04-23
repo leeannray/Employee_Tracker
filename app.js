@@ -100,7 +100,7 @@ async function displayPrompts() {
 
     switch (choice) {
       case "VIEW_EMPLOYEES":
-        return allEmployees();
+        return totalEmployees();
         break;
       case "VIEW_EMPLOYEES_BY_DEPT":
         return viewEmployeesByDept();
@@ -154,8 +154,8 @@ async function displayPrompts() {
     }
 }
 
-async function allEmployees() {
-    const employees = await db.findAllEmployees();
+async function totalEmployees() {
+    const employees = await db.allEmployees();
 
     console.table(employees);
     displayPrompts();
@@ -163,7 +163,7 @@ async function allEmployees() {
 
 
 async function viewEmployeesByDept() {
-    const departments = await db.findAllDepartments();
+    const departments = await db.findAllDepts();
 
     const deptChoices = departments.map(({ id, name }) => ({
         name: name,
@@ -173,7 +173,7 @@ async function viewEmployeesByDept() {
     const { departmentId } = await prompt(
         Questions.getTableChoice("departmentId", "Select a department", deptChoices)
     );
-    const employees = await db.findAllEmployeesByDepartment(departmentId);
+    const employees = await db.findAllByDepartment(departmentId);
 
     console.log("\n");
     console.table(employees);
@@ -184,7 +184,7 @@ async function viewEmployeesByDept() {
 
 
 async function viewEmployeesByMan() {
-  const managers = await db.findAllEmployees();
+  const managers = await db.allEmployees();
 
   const manChoices = managers.map(({ id, first_name, last_name }) => ({
     name: `${first_name} ${last_name}`,
@@ -195,12 +195,12 @@ async function viewEmployeesByMan() {
       Questions.getTableChoice("managerId", "Select a manager", manChoices)
     );
 
-  const employees = await db.findAllEmployeesByManager(managerId);
+  const employees = await db.findAllByManager(managerId);
 
   console.log("\n");
 
   if (employees.length === 0) {
-    console.log("The selected employee has no direct reports");
+    console.log("The selected employee has no reports")
   } else {
     console.table(employees);
   }
@@ -213,8 +213,8 @@ async function addEmployee() {
 
 
 const roles = await db.findAllRoles();
-    const employees = await db.findAllEmployees();
-    const role = await db.findAllDepartments();
+    const employees = await db.allEmployees();
+    const departments = await db.findAllDepts();
 
 const employee = await prompt([
   {
@@ -238,31 +238,28 @@ const roleChoices = roles.map(({ id, title }) => ({
 
 employee.role_id = roleId;
 
-const managerChoices = employees.map(({ id, first_name, last_name }) => ({
+const manChoices = employees.map(({ id, first_name, last_name }) => ({
   name: `${first_name} ${last_name}`,
   value: id,
 }));
-managerChoices.unshift({ name: "None", value: null });
+
+manChoices.unshift({ name: "None", value: null });
 
     const { managerId } = await prompt(
-        Questions.getTableChoice("managerId", "Select a manager", managerChoices)
+        Questions.getTableChoice("managerId", "Select a manager", manChoices)
     );
 
 employee.manager_id = managerId;
 
-    const departmentChoices = role.map(
-      ({ id, name }) => ({
-        name: name,
-        value: id,
-      })
-    );
-departmentChoices.unshift({ name: "None", value: null });
-
+const deptChoices = departments.map(({ id, name }) => ({
+  name: name,
+  value: id,
+}));
     const { departmentId } = await prompt(
-        Questions.getTableChoice("departmentId", "Select a department", departmentChoices)
+        Questions.getTableChoice("departmentId", "Select a department", deptChoices)
     );
 
-    role.department_id = departmentId;
+    employee.department_id = departmentId;
 
 await db.createEmployee(employee);
 
@@ -303,7 +300,7 @@ async function updateEmployeeRole() {
 
     const employeeChoices = employees.map(({ id, first_name, last_name }) => ({
         name: `${first_name} ${last_name}`,
-        value: id,
+        value: id
     }));
 
     const { employeeId } = await prompt(
@@ -314,7 +311,7 @@ async function updateEmployeeRole() {
 
     const roleChoices = roles.map(({ id, title }) => ({
         name: title,
-        value: id,
+        value: id
     }));
 
     const { roleId } = await prompt(Questions.getTableChoice("roleId", "Select a role", roleChoices));
@@ -365,36 +362,63 @@ async function viewAllRoles() {
 
 
 async function addRole() {
-  const departments = await db.findAllDepartments();
+    const departments = await db.findAllDepartments();
 
-  const departmentChoices = departments.map(({ id, name }) => ({
-    name: name,
-    value: id,
-  }));
+    const departmentChoices = departments.map(({ id, name }) => ({
+        name: name,
+        value: id
+    }));
 
     const role = await prompt([
+      {
+        name: "title",
+        message: "What is the name of the role?"
+      },
+      {
+        name: "salary",
+        message: "What is the salary of the role?"
+      }
+    ])
+const department_Id = await prompt(
         Questions.getTableChoice(
             "department_Id",
             "Select a department",
             departmentChoices
-        ),
-        {
-            name: "title",
-            message: "What is the name of the role?"
-        },
-        {
-            name: "salary",
-            message: "What is the salary of the role?"
-            }
-        ]);
+        )
+    );
 
 
-  await db.createRole(role);
 
-  console.log(`Added ${role.title} to the database`);
+
+  await db.createRole(role, department_Id);
+
+  console.log(`Added role to the database`);
 
   displayPrompts();
 };
+
+async function delRole() {
+  const roles = await db.findAllRoles();
+
+  const roleChoices = roles.map(({ id, title }) => ({
+    name: title,
+    value: id
+  }));
+
+    const { roleId } = await prompt(Questions.getTableChoice("roleId", "Select a role", roleChoices)
+    );
+
+
+    await db.deleteRole(roleId);
+
+
+
+  console.log(`Removed role from the database`);
+
+  displayPrompts();
+}
+
+
 async function addDept() {
 
   const department = await prompt([
