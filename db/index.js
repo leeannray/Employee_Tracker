@@ -20,7 +20,6 @@ class Database {
     );
   }
 
-
   findAllByManager(managerId) {
     return this.connection.query(
       "SELECT employee.id, employee.first_name, employee.last_name, department.name AS department, role.title FROM employee LEFT JOIN role on role.id = employee.role_id LEFT JOIN department ON department.id = role.department_id WHERE manager_id = ?;",
@@ -28,17 +27,17 @@ class Database {
     );
   }
 
-  findAllManagers(employeeId) {
+  //filtering by manager effect of table: only results w/ employee ID that overlaps with the table of employee manager ids from employee table will be returned
+  findAllManagers() {
     return this.connection.query(
-      "SELECT id, first_name, last_name FROM employee WHERE id != ?",
-      employeeId
+      `SELECT employee.id, employee.first_name, employee.last_name, department.name FROM employee INNER JOIN role on role.id = employee.role_id INNER JOIN department on department.id = role.department_id WHERE employee.id IN ( SELECT employee.manager_id FROM employee )`
     );
   }
   // Employee creation
   newEmployee(employee) {
     return this.connection.query("INSERT INTO employee SET ?", employee);
   }
-
+// employeeid used as parameter to delete employee
   deleteEmployee(employeeId) {
     return this.connection.query(
       "DELETE FROM employee WHERE id = ?",
@@ -62,9 +61,9 @@ class Database {
 
   findAllDepts() {
     return this.connection.query(
-      "SELECT department.id, department.name, SUM(role.salary) AS utilized_budget FROM employee LEFT JOIN role on employee.role_id = role.id LEFT JOIN department on role.department_id = department.id GROUP BY department.id, department.name;"
-    );
-  }
+      "SELECT department.id, department.name AS department, role.salary FROM role LEFT JOIN department on role.department_id = department.id;"
+    )
+  };
 
   // Department creation
   newDepartment(department) {
@@ -73,14 +72,16 @@ class Database {
 
   deleteDepartment(departmentId) {
     return this.connection.query(
-      "DELETE FROM department WHERE id = ?", departmentId
+      "DELETE FROM department WHERE id = ?",
+      departmentId
     );
   }
 
-  // Update the given employee's role
+  // Update the given employee's role. parameters are employeeid and roleid
   updateEmployeeRole(employeeId, roleId) {
     return this.connection.query(
-      "UPDATE employee SET role_id = ? WHERE id = ?", [roleId, employeeId]
+      "UPDATE employee SET role_id = ? WHERE id = ?",
+      [roleId, employeeId]
     );
   }
 
@@ -91,17 +92,26 @@ class Database {
     );
   }
 
-  // Update the given employee's manager
+  // Update the given employee's manager. parameters are employeeid and manager id
   updateEmployeeManager(employeeId, managerId) {
     return this.connection.query(
-      "UPDATE employee SET manager_id = ? WHERE id = ?", [managerId, employeeId]
+      "UPDATE employee SET manager_id = ? WHERE id = ?",
+      [managerId, employeeId]
     );
   }
 
   updateEmployeeDept(employeeId, departmentId) {
     return this.connection.query(
-      "UPDATE employee SET department_id = ? WHERE id = ?", [departmentId, employeeId]
+      "UPDATE employee SET department_id = ? WHERE id = ?",
+      [departmentId, employeeId]
     );
+  }
+
+  totalBudget(employeeId, departmentId) {
+    return this.connection.query(
+      "SELECT department.id, department.name, SUM(role.salary) AS utilized_budget FROM employee LEFT JOIN role on employee.role_id = role.id LEFT JOIN department on role.department_id = department.id GROUP BY department.id, department.name;",
+        [employeeId, departmentId]
+    )
   }
 };
 

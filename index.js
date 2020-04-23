@@ -1,12 +1,13 @@
-const { prompt } = require('inquirer');
-const appLogo = require('asciiart-logo');
-const db = require('./db/index');
-const dB = require('./db');
-const Questions = require('./db/questions');
-require('console.table');
+const { prompt } = require('inquirer'); //inquirer
+const appLogo = require('asciiart-logo'); //logo
+const db = require('./db/index'); //mysql setup
+const database = require('./db');
+var mysql = require("mysql");
+const Questions = require('./db/questions'); //used as template for prompt choices/answers
+require('console.table'); //able to see tables in console
 
+//initialize prompts/main menu
 start();
-
 // Logo when main prompts load
 function start() {
     let logo = appLogo({
@@ -14,7 +15,7 @@ function start() {
     }).render();
     console.log(logo);
 
-    displayPrompts();
+  displayPrompts();
 
 };
 
@@ -96,13 +97,17 @@ async function displayPrompts() {
             value: "viewManagers",
           },
           {
+            name: "View Total Budget",
+            value: "totalBudget",
+          },
+          {
             name: "Exit",
             value: "exit",
           },
         ],
       },
     ]);
-
+//used switch statements rather than if/else
     switch (choice) {
       case "viewEMPLOYEES":
         return totalEmployees();
@@ -155,13 +160,17 @@ async function displayPrompts() {
       case "delDEPT":
         return delDept();
         break;
+      case "totalBudget":
+        return totalBudget();
+        break;
       case "exitDB":
         return exit();
       default:
         connection.end();
+      //will end connection by default
     }
 }
-
+//view total employees by simple function called in db folder (index.js)
 async function totalEmployees() {
     const employees = await db.allEmployees();
 
@@ -169,7 +178,7 @@ async function totalEmployees() {
     displayPrompts();
 }
 
-
+//view employees by dept using map (id and name) then deconstructing using department id to view by dept
 async function viewEmployeesByDept() {
     const departments = await db.findAllDepts();
 
@@ -190,7 +199,7 @@ async function viewEmployeesByDept() {
 }
 
 
-
+//view employees by manager using id, first and last name, and deconstructing from manager id. if no employees then "no reports" found within manager table
 async function viewEmployeesByMan() {
   const managers = await db.allEmployees();
 
@@ -216,7 +225,7 @@ async function viewEmployeesByMan() {
   displayPrompts();
 }
 
-
+//add employee promopting user for first and last name then using id/title of role to assign to role as well as to a manager. tried to assign to dept without luck
 async function addEmployee() {
 
 
@@ -273,7 +282,7 @@ await db.newEmployee(employee);
 }
 
 
-
+// delete employee using id, first and last name, deconstructing and using employee id from schema.
 async function delEmployee() {
   const employees = await db.allEmployees();
 
@@ -293,6 +302,7 @@ async function delEmployee() {
   displayPrompts();
 }
 
+//update employee departments using id, first and last name, employee id and assign to departments using map (id and name). use department id to deconstruct
 async function updateEmployeeDept() {
   const employees = await db.allEmployees();
 
@@ -326,7 +336,7 @@ async function updateEmployeeDept() {
 
   displayPrompts();
 }
-
+//update employee role; use first and last name and id for employee choices. find all possible roles. use employee id and role id
 async function updateEmployeeRole() {
     const employees = await db.allEmployees();
 
@@ -363,6 +373,7 @@ async function updateEmployeeRole() {
     displayPrompts();
 };
 
+//update employee manaagers
 async function updateEmployeeMan() {
   const employees = await db.allEmployees();
 
@@ -403,6 +414,7 @@ async function updateEmployeeMan() {
   displayPrompts();
 };
 
+//view all roles
 async function viewAllRoles() {
   const roles = await db.findAllRoles();
 
@@ -412,7 +424,7 @@ async function viewAllRoles() {
   displayPrompts();
 }
 
-
+// add role by using id and name of departments. prompt user for salary and name of role and assign to specific id.
 async function addRole() {
     const departments = await db.findAllDepts();
 
@@ -434,7 +446,7 @@ async function addRole() {
     const department_Id = await prompt(
       Questions.getTableChoice(
         "list",
-        "departmentId",
+        "department_Id",
         "Select a department",
         deptChoices
       )
@@ -451,6 +463,7 @@ async function addRole() {
   displayPrompts();
 };
 
+//delete role using role id which will delete child elements
 async function delRole() {
   const roles = await db.findAllRoles();
 
@@ -473,7 +486,7 @@ async function delRole() {
   displayPrompts();
 }
 
-
+//view all departments
 async function viewDepts() {
   const departments = await db.findAllDepts();
 
@@ -483,14 +496,28 @@ async function viewDepts() {
     displayPrompts();
 }
 
+//view all managers
 async function viewAllManagers() {
   const managers = await db.findAllManagers();
+const manChoices = employees.map(({ id, first_name, last_name }) => ({
+  name: `${first_name} ${last_name}`,
+  value: id,
+}));
+
+manChoices.unshift({ name: "None", value: null });
+
+const { managerId } = await prompt(
+  Questions.getTableChoice("list", "managerId", "Select a manager", manChoices)
+);
+
+  employee.manager_id = managerId;
 
   console.table(managers);
 
   displayPrompts();
 };
 
+//add department using name, assigned incremental id
 async function addDept() {
 
   const department = await prompt([
@@ -507,6 +534,7 @@ async function addDept() {
   displayPrompts();
 };
 
+//delete dept using map (id and name) and deconstructuring usuing department id.
 async function delDept() {
   const departments = await db.findAllDepts();
 
@@ -525,12 +553,38 @@ async function delDept() {
   displayPrompts();
 }
 
+async function totalBudget() {
+  const departments = await db.findAllDepts();
+
+  const deptChoices = departments.map(({ id, name }) => ({
+    name: name,
+    value: id,
+  }));
+
+  const { departmentId } = await prompt(
+    Questions.getTableChoice(
+      "list",
+      "departmentId",
+      "Select a department",
+      deptChoices
+    )
+  );
+  
+  const total = await db.totalBudget(departmentId);
+
+
+  console.log("\n");
+
+  console.table(total);
+}
+//function for exiting prompts/terminal database
 function exit() {
 
     console.log("Until later!");
     process.exit();
 }
 
+//tried to combine any info to be updated into one function (role, manager, department, possibly name etc. but still need to work on this)
 async function updateInfo() {
     // let info = {
     //     employees: async allEmployees() { await db.findAllEmployees() },

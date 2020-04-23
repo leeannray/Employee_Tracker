@@ -6,6 +6,7 @@ const connection = mysql.createConnection({
   // Username
   user: "root",
   // Password
+  port: 3306,
   password: "Fuckingmarc20!",
   database: "employeeTracker_db",
 });
@@ -20,5 +21,5 @@ connection.connect(function (err) {
 
 // Sets up connection.query to use promises rather than callbacks --> use the async/await syntax
 connection.query = util.promisify(connection.query);
-
+//export to be used for sql
 module.exports = connection;

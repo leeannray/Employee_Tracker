@@ -3,7 +3,7 @@ class Questions {
     constructor() {
 
     }
-
+//created constructor for prompt choices
     getTableChoice(type, name, message, choiceArray) {
         return {
           type: type,
