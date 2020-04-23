@@ -200,7 +200,7 @@ async function viewEmployeesByMan() {
   console.log("\n");
 
   if (employees.length === 0) {
-    console.log("The selected employee has no reports")
+    console.log("No reports")
   } else {
     console.table(employees);
   }
@@ -261,10 +261,10 @@ const deptChoices = departments.map(({ id, name }) => ({
 
     employee.department_id = departmentId;
 
-await db.createEmployee(employee);
+await db.newEmployee(employee);
 
 console.log(
-  `Added ${employee.first_name} ${employee.last_name} to the database`
+  `${employee.first_name} ${employee.last_name} added to database`
 );
 
 
@@ -274,11 +274,11 @@ console.log(
 
 
 async function delEmployee() {
-  const employees = await db.findAllEmployees();
+  const employees = await db.allEmployees();
 
   const employeeChoices = employees.map(({ id, first_name, last_name }) => ({
     name: `${first_name} ${last_name}`,
-    value: id,
+    value: id
   }));
 
     const { employeeId } = await prompt(
@@ -295,7 +295,7 @@ async function delEmployee() {
 
 
 async function updateEmployeeRole() {
-    const employees = await db.findAllEmployees();
+    const employees = await db.allEmployees();
 
 
     const employeeChoices = employees.map(({ id, first_name, last_name }) => ({
@@ -324,24 +324,24 @@ async function updateEmployeeRole() {
 };
 
 async function updateEmployeeMan() {
-  const employees = await db.findAllEmployees();
+  const employees = await db.allEmployees();
 
   const employeeChoices = employees.map(({ id, first_name, last_name }) => ({
     name: `${first_name} ${last_name}`,
-    value: id,
+    value: id
   }));
 
     const { employeeId } = await prompt(Questions.getTableChoice("employeeId", "Select an employee", employeeChoices)
     );
 
-  const managers = await db.findAllPossibleManagers(employeeId);
+  const managers = await db.findAllManagers(employeeId);
 
-  const managerChoices = managers.map(({ id, first_name, last_name }) => ({
+  const manChoices = managers.map(({ id, first_name, last_name }) => ({
     name: `${first_name} ${last_name}`,
-    value: id,
+    value: id
   }));
 
-    const { managerId } = await prompt(Questions.getTableChoice("managerId", "Select a manager", managerChoices)
+    const { managerId } = await prompt(Questions.getTableChoice("managerId", "Select a manager", manChoices)
     );
 
   await db.updateEmployeeManager(employeeId, managerId);
@@ -362,37 +362,38 @@ async function viewAllRoles() {
 
 
 async function addRole() {
-    const departments = await db.findAllDepartments();
+    const departments = await db.findAllDepts();
 
-    const departmentChoices = departments.map(({ id, name }) => ({
+    const deptChoices = departments.map(({ id, name }) => ({
         name: name,
         value: id
     }));
 
     const role = await prompt([
-      {
-        name: "title",
-        message: "What is the name of the role?"
-      },
-      {
-        name: "salary",
-        message: "What is the salary of the role?"
-      }
-    ])
-const department_Id = await prompt(
+        {
+            name: "title",
+            message: "What is the name of the role?"
+        },
+        {
+            name: "salary",
+            message: "What is the salary of the role?"
+        }
+    ]);
+    const department_Id = await prompt(
         Questions.getTableChoice(
-            "department_Id",
+            "departmentId",
             "Select a department",
-            departmentChoices
+            deptChoices
         )
     );
+     employee.department_id = departmentId;
 
 
 
 
-  await db.createRole(role, department_Id);
+  await db.newRole(role,);
 
-  console.log(`Added role to the database`);
+  console.log(`Added ${role.title} to database`);
 
   displayPrompts();
 };
@@ -419,6 +420,14 @@ async function delRole() {
 }
 
 
+async function viewDepts() {
+  const departments = await db.findAllDepts();
+
+
+  console.table(departments);
+
+    displayPrompts();
+}
 async function addDept() {
 
   const department = await prompt([
@@ -428,29 +437,34 @@ async function addDept() {
     },
   ]);
 
-  await db.createDepartment(department);
+  await db.newDepartment(department);
 
-  console.log(`Added ${department.name} to the database`);
+  console.log(`${department.name} added to database`);
 
   displayPrompts();
 };
 
 async function delDept() {
-  const departments = await db.findAllDepartments();
+  const departments = await db.findAllDepts();
 
-  const departmentChoices = departments.map(({ id, name }) => ({
+  const deptChoices = departments.map(({ id, name }) => ({
     name: name,
-    value: id,
+    value: id
   }));
 
-    const { departmentId } = await prompt(Questions.getTableChoice("departmentId", "Delete a department", departmentChoices)
+    const { departmentId } = await prompt(Questions.getTableChoice("departmentId", "Choose a department", deptChoices)
     );
 
   await db.deleteDepartment(departmentId);
 
-  console.log(`Removed ${department.name} from the database`);
+  console.log(`${department.name} deleted from database`);
 
   displayPrompts();
+}
+
+function exit() => {
+    console.log("Until later!");
+    process.exit();
 }
 
 async function updateInfo() {
