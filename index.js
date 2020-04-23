@@ -179,9 +179,9 @@ async function viewEmployeesByDept() {
     }));
 
     const { departmentId } = await prompt(
-        Questions.getTableChoice("departmentId", "Select a department", deptChoices)
+        Questions.getTableChoice("list", "departmentId", "Select a department", deptChoices)
     );
-    const employees = await db.findAllByDepartment(departmentId);
+    const employees = await db.findAllByDept(departmentId);
 
     console.log("\n");
     console.table(employees);
@@ -200,7 +200,7 @@ async function viewEmployeesByMan() {
   }));
 
     const { managerId } = await prompt(
-      Questions.getTableChoice("managerId", "Select a manager", manChoices)
+      Questions.getTableChoice("list", "managerId", "Select a manager", manChoices)
     );
 
   const employees = await db.findAllByManager(managerId);
