@@ -4,9 +4,9 @@ class Questions {
 
     }
 
-    getTableChoice(name, message, choiceArray) {
+    getTableChoice(type, name, message, choiceArray) {
         return {
-          type: "list",
+          type: type,
           name: name,
           message: message,
           choices: choiceArray

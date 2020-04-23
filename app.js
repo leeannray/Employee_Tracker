@@ -1,13 +1,14 @@
 const { prompt } = require('inquirer');
 const appLogo = require('asciiart-logo');
 const db = require('./db/index');
+const dB = require('./db');
 const Questions = require('./db/questions');
 require('console.table');
 
-init();
+start();
 
 // Logo when main prompts load
-function init() {
+function start() {
     let logo = appLogo({
         name: "EMPLOYEE DATABASE"
     }).render();
@@ -28,23 +29,23 @@ async function displayPrompts() {
         choices: [
           {
             name: "View All Employees",
-            value: "VIEW_EMPLOYEES",
+            value: "viewEMPLOYEES",
           },
           {
             name: "View All Employees By Department",
-            value: "VIEW_EMPLOYEES_BY_DEPT",
+            value: "employees_byDEPT",
           },
           {
             name: "View All Employees By Manager",
-            value: "VIEW_EMPLOYEES_BY_MAN",
+            value: "employees_byMAN",
           },
           {
             name: "Add Employee",
-            value: "ADD_EMPLOYEE",
+            value: "addEMPLOYEE",
           },
           {
             name: "Delete Employee",
-            value: "DEL_EMPLOYEE",
+            value: "delEMPLOYEE",
           },
           {
             name: "Update Employee Info",
@@ -52,7 +53,7 @@ async function displayPrompts() {
           },
           {
             name: "Update Employee Role",
-            value: "UPDATE_EMPLOYEE_ROLE",
+            value: "update_employeeROLE",
           },
           {
             name: "Update Employee Name",
@@ -60,97 +61,104 @@ async function displayPrompts() {
           },
           {
             name: "Update Employee Manager",
-            value: "UPDATE_EMPLOYEE_MAN",
+            value: "update_employeeMAN",
           },
           {
             name: "Update Employee Department",
-            value: "UPDATE_EMPLOYEE_DEPT",
+            value: "update_employeeDEPT",
           },
           {
             name: "View All Roles",
-            value: "VIEW_ALL_ROLES",
+            value: "viewROLES",
           },
           {
             name: "Add Role",
-            value: "ADD_ROLE",
+            value: "addROLE",
           },
           {
             name: "Delete Role",
-            value: "DEL_ROLE",
+            value: "delROLE",
           },
           {
             name: "View All Departments",
-            value: "VIEW_DEPTS",
+            value: "viewDEPTS",
           },
           {
             name: "Add Department",
-            value: "ADD_DEPT",
+            value: "addDEPT",
           },
           {
             name: "Delete Department",
-            value: "DEL_DEPT",
+            value: "delDEPT",
+          },
+          {
+            name: "View All Managers",
+            value: "viewManagers",
           },
           {
             name: "Exit",
-            value: "EXIT",
+            value: "exit",
           },
         ],
       },
     ]);
 
     switch (choice) {
-      case "VIEW_EMPLOYEES":
+      case "viewEMPLOYEES":
         return totalEmployees();
         break;
-      case "VIEW_EMPLOYEES_BY_DEPT":
+      case "employees_byDEPT":
         return viewEmployeesByDept();
         break;
-      case "VIEW_EMPLOYEES_BY_MAN":
+      case "employees_byMAN":
         return viewEmployeesByMan();
         break;
-      case "ADD_EMPLOYEE":
+      case "addEMPLOYEE":
         return addEmployee();
         break;
-      case "DEL_EMPLOYEE":
+      case "delEMPLOYEE":
         return delEmployee();
         break;
       case "UPDATE_EMPLOYEE_INFO":
         return updateInfo();
         break;
-      case "UPDATE_EMPLOYEE_ROLE":
+      case "update_employeeROLE":
         return updateEmployeeRole();
         break;
       case "UPDATE_NAME":
         return updateEmployeeName();
         break;
-      case "UPDATE_EMPLOYEE_MAN":
+      case "viewManagers":
+        return viewAllManagers();
+        break;
+      case "update_employeeMAN":
         return updateEmployeeMan();
         break;
-      case "UPDATE_EMPLOYEE_DEPT":
+      case "update_empoloyeeDEPT":
         return updateEmployeeDept();
         break;
-      case "VIEW_ALL_ROLES":
+      case "viewROLES":
         return viewAllRoles();
         break;
-      case "ADD_ROLE":
+      case "addROLE":
         return addRole();
         break;
-      case "DEL_ROLE":
+      case "delROLE":
         return delRole();
         break;
-      case "VIEW_DEPTS":
+      case "viewDEPTS":
         return viewDepts();
         break;
-      case "ADD_DEPT":
+      case "addDEPT":
         return addDept();
         break;
-      case "DEL_DEPT":
+      case "delDEPT":
         return delDept();
         break;
-        case "EXIT":
-            connection.end();
-        default:
-            connection.end();
+      case "exitDB":
+        return exit();
+      default:
+        connection.end();
     }
 }
 
@@ -213,62 +221,55 @@ async function addEmployee() {
 
 
 const roles = await db.findAllRoles();
-    const employees = await db.allEmployees();
-    const departments = await db.findAllDepts();
+const employees = await db.allEmployees();
 
-const employee = await prompt([
-  {
-    name: "first_name",
-    message: "What is the employee's first name?",
-  },
-  {
-    name: "last_name",
-    message: "What is the employee's last name?",
-  },
-]);
+
+    const employee = await prompt([
+        {
+            name: "first_name",
+            message: "What is the employee's first name?"
+        },
+        {
+            name: "last_name",
+            message: "What is the employee's last name?"
+        }
+    ]);
 
 const roleChoices = roles.map(({ id, title }) => ({
   name: title,
-  value: id,
+  value: id
 }));
 
     const { roleId } = await prompt(
-        Questions.getTableChoice("roleId", "Select a role", roleChoices)
-    );
+        Questions.getTableChoice(
+            "list", "roleId", "Select a role", roleChoices
+        ));
 
-employee.role_id = roleId;
+
+ employee.role_id = roleId;
 
 const manChoices = employees.map(({ id, first_name, last_name }) => ({
   name: `${first_name} ${last_name}`,
-  value: id,
+  value: id
 }));
 
 manChoices.unshift({ name: "None", value: null });
 
     const { managerId } = await prompt(
-        Questions.getTableChoice("managerId", "Select a manager", manChoices)
+        Questions.getTableChoice("list", "managerId", "Select a manager", manChoices)
     );
 
 employee.manager_id = managerId;
 
-const deptChoices = departments.map(({ id, name }) => ({
-  name: name,
-  value: id,
-}));
-    const { departmentId } = await prompt(
-        Questions.getTableChoice("departmentId", "Select a department", deptChoices)
-    );
-
-    employee.department_id = departmentId;
-
 await db.newEmployee(employee);
 
-console.log(
-  `${employee.first_name} ${employee.last_name} added to database`
-);
+  console.log(
+    `Added ${employee.first_name} ${employee.last_name} to the database`
+  );
 
 
-    displayPrompts()
+
+    displayPrompts();
 }
 
 
@@ -292,7 +293,39 @@ async function delEmployee() {
   displayPrompts();
 }
 
+async function updateEmployeeDept() {
+  const employees = await db.allEmployees();
 
+  const employeeChoices = employees.map(({ id, first_name, last_name }) => ({
+    name: `${first_name} ${last_name}`,
+    value: id
+  }));
+
+  const { employeeId } = await prompt(
+    Questions.getTableChoice("list", "employeeId", "Select an employee", employeeChoices)
+  );
+
+  const depts = await db.findAllDepts();
+
+  const deptChoices = depts.map(({ id, name }) => ({
+    name: name,
+    value: id
+  }));
+
+  const { departmentId } = await prompt(
+    Questions.getTableChoice("list",
+      "departmentId",
+      "Select a department",
+      deptChoices
+    )
+  );
+
+  await db.updateEmployeeDept(employeeId, departmentId);
+
+  console.log("Updated employee's department");
+
+  displayPrompts();
+}
 
 async function updateEmployeeRole() {
     const employees = await db.allEmployees();
@@ -304,7 +337,12 @@ async function updateEmployeeRole() {
     }));
 
     const { employeeId } = await prompt(
-      Questions.getTableChoice("employeeId", "Select an employee", employeeChoices)
+      Questions.getTableChoice(
+        "list",
+        "employeeId",
+        "Select an employee",
+        employeeChoices
+      )
     );
 
     const roles = await db.findAllRoles();
@@ -314,7 +352,9 @@ async function updateEmployeeRole() {
         value: id
     }));
 
-    const { roleId } = await prompt(Questions.getTableChoice("roleId", "Select a role", roleChoices));
+    const { roleId } = await prompt(
+      Questions.getTableChoice("list", "roleId", "Select a role", roleChoices)
+    );
 
     await db.updateEmployeeRole(employeeId, roleId);
 
@@ -331,7 +371,13 @@ async function updateEmployeeMan() {
     value: id
   }));
 
-    const { employeeId } = await prompt(Questions.getTableChoice("employeeId", "Select an employee", employeeChoices)
+    const { employeeId } = await prompt(
+      Questions.getTableChoice(
+        "list",
+        "employeeId",
+        "Select an employee",
+        employeeChoices
+      )
     );
 
   const managers = await db.findAllManagers(employeeId);
@@ -341,7 +387,13 @@ async function updateEmployeeMan() {
     value: id
   }));
 
-    const { managerId } = await prompt(Questions.getTableChoice("managerId", "Select a manager", manChoices)
+    const { managerId } = await prompt(
+      Questions.getTableChoice(
+        "list",
+        "managerId",
+        "Select a manager",
+        manChoices
+      )
     );
 
   await db.updateEmployeeManager(employeeId, managerId);
@@ -380,11 +432,12 @@ async function addRole() {
         }
     ]);
     const department_Id = await prompt(
-        Questions.getTableChoice(
-            "departmentId",
-            "Select a department",
-            deptChoices
-        )
+      Questions.getTableChoice(
+        "list",
+        "departmentId",
+        "Select a department",
+        deptChoices
+      )
     );
      employee.department_id = departmentId;
 
@@ -406,7 +459,8 @@ async function delRole() {
     value: id
   }));
 
-    const { roleId } = await prompt(Questions.getTableChoice("roleId", "Select a role", roleChoices)
+    const { roleId } = await prompt(
+      Questions.getTableChoice("list", "roleId", "Select a role", roleChoices)
     );
 
 
@@ -428,6 +482,7 @@ async function viewDepts() {
 
     displayPrompts();
 }
+
 async function addDept() {
 
   const department = await prompt([
@@ -462,7 +517,8 @@ async function delDept() {
   displayPrompts();
 }
 
-function exit() => {
+function exit() {
+
     console.log("Until later!");
     process.exit();
 }

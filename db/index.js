@@ -13,7 +13,7 @@ class Database {
     );
   }
 
-  findAllByDepartment(departmentId) {
+  findAllByDept(departmentId) {
     return this.connection.query(
       "SELECT employee.id, employee.first_name, employee.last_name, role.title FROM employee LEFT JOIN role on employee.role_id = role.id LEFT JOIN department on role.department_id = department.id WHERE department.id = ?;",
       departmentId
