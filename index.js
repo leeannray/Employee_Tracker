@@ -283,7 +283,7 @@ async function delEmployee() {
   }));
 
     const { employeeId } = await prompt(
-        Questions.getTableChoice("employeeId", "Select an employee to delete", employeeChoices)
+        Questions.getTableChoice("list", "employeeId", "Select an employee to delete", employeeChoices)
   );
 
   await db.deleteEmployee(employeeId);
