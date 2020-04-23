@@ -12,8 +12,8 @@ class Database {
   }
   // Role creation
   createRole(role) {
-    return this.connection.query("INSERT INTO role SET ?", role);
-  }
+    return this.connection.query("INSERT INTO role SET ?", role)
+  };
   // Department creation
   createDepartment(department) {
     return this.connection.query("INSERT INTO department SET ?", department);
@@ -53,7 +53,7 @@ class Database {
   // Delete department by id (primary key)
   deleteDepartment(departmentId) {
     return this.connection.query(
-      "DELETE FORM department WHERE id = ?",
+      "DELETE FROM department WHERE id = ?",
       departmentId
     );
   }
