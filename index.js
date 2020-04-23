@@ -483,6 +483,14 @@ async function viewDepts() {
     displayPrompts();
 }
 
+async function viewAllManagers() {
+  const managers = await db.findAllManagers();
+
+  console.table(managers);
+
+  displayPrompts();
+};
+
 async function addDept() {
 
   const department = await prompt([

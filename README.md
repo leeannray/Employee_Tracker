@@ -106,3 +106,15 @@ How do you deliver this? Here are some guidelines:
 
 ## LOGO
   * Used asciiart-logo to create employee database logo
+
+<img src="./Assets/Screen%20Shot%202020-04-23%20at%2012.08.44%20AM.png" alt="screenshot">
+<img src="./Assets/Screen%20Shot%202020-04-23%20at%2012.08.59%20AM.png" alt="screenshot">
+<img src="./Assets/Screen%20Shot%202020-04-23%20at%2012.09.14%20AM.png" alt="screenshot">
+<img src="./Assets/Screen%20Shot%202020-04-23%20at%2012.09.27%20AM.png" alt="screenshot">
+<img src="./Assets/Screen%20Shot%202020-04-23%20at%2012.09.54%20AM.png" alt="screenshot">
+<img src="./Assets/Screen%20Shot%202020-04-23%20at%2012.10.13%20AM.png" alt="screenshot">
+<img src="./Assets/Screen%20Shot%202020-04-23%20at%2012.10.30%20AM.png" alt="screenshot">
+<img src="./Assets/Screen%20Shot%202020-04-23%20at%2012.10.49%20AM.png" alt="screenshot">
+<video controls width="620" autoplay> 
+<source src="./Assets/GIPHY1_employee.mp4" type="video/mp4" >
+</video>
